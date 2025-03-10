@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Transfer Money - Bank App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Transfer Money</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <strong>Source Account:</strong> {{ account.account_number }}<br>
+                    <strong>Available Balance:</strong> {{ account.balance }} {{ account.currency }}
+                </div>
+                
+                <form method="post" action="{{ url_for('accounts.transfer', account_number=account.account_number) }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.account_to.label(class="form-label") }}
+                        {{ form.account_to(class="form-control") }}
+                        <small class="form-text text-muted">Enter the full account number including bank prefix</small>
+                        {% for error in form.account_to.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.amount.label(class="form-label") }}
+                        {{ form.amount(class="form-control") }}
+                        <small class="form-text text-muted">Currency: {{ account.currency }}</small>
+                        {% for error in form.amount.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.explanation.label(class="form-label") }}
+                        {{ form.explanation(class="form-control", rows=3) }}
+                        {% for error in form.explanation.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('accounts.account_details', account_number=account.account_number) }}">Back to Account Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

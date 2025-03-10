@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Bank App{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Your Accounts</h4>
+                <a href="{{ url_for('accounts.create_account') }}" class="btn btn-sm btn-primary">Create New Account</a>
+            </div>
+            <div class="card-body">
+                {% if accounts %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Account Number</th>
+                                <th>Balance</th>
+                                <th>Currency</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for account in accounts %}
+                            <tr>
+                                <td>{{ account.account_number }}</td>
+                                <td>{{ account.balance }}</td>
+                                <td>{{ account.currency }}</td>
+                                <td>
+                                    <a href="{{ url_for('accounts.account_details', account_number=account.account_number) }}" class="btn btn-sm btn-info">Details</a>
+                                    <a href="{{ url_for('accounts.transfer', account_number=account.account_number) }}" class="btn btn-sm btn-success">Transfer</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    You don't have any accounts yet. <a href="{{ url_for('accounts.create_account') }}">Create one now</a>.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Recent Transactions</h4>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                <ul class="list-group">
+                    {% for transaction in transactions %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">{{ transaction.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            <span class="badge {% if transaction.account_from_id in account_ids %}bg-danger{% else %}bg-success{% endif %}">
+                                {% if transaction.account_from_id in account_ids %}Sent{% else %}Received{% endif %}
+                            </span>
+                        </div>
+                        <div>
+                            <strong>{{ transaction.amount }} {{ transaction.currency }}</strong>
+                        </div>
+                        <div>
+                            <small>{{ transaction.explanation[:30] }}{% if transaction.explanation|length > 30 %}...{% endif %}</small>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="alert alert-info">No recent transactions.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
